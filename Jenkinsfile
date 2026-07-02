@@ -40,9 +40,10 @@ pipeline {
                     def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
                     def name = isMain ? 'nodemain:v1.0' : 'nodedev:v1.0'
                     def port = isMain ? '3000' : '3001'
+                    def containerName = isMain ? 'node-app-main' : 'node-app-dev'
 
                     bat "docker rm -f ${containerName} 2>/dev/null || true"
-                    bat "docker run -d --expose ${port} -p ${port}:3000 ${name}"
+                    bat "docker run -d --name ${containerName} --expose ${port} -p ${port}:3000 ${name}"
                 }
             }
         }
