@@ -14,13 +14,13 @@ pipeline {
 
         stage('build') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('test') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
@@ -29,7 +29,7 @@ pipeline {
                 script {
                     def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
                     def imageName = isMain ? 'nodemain:v1.0' : 'nodedev:v1.0'
-                    sh "docker build -t ${imageName} ."
+                    bat "docker build -t ${imageName} ."
                 }
             }
         }
@@ -41,8 +41,8 @@ pipeline {
                     def name = isMain ? 'nodemain:v1.0' : 'nodedev:v1.0'
                     def port = isMain ? '3000' : '3001'
 
-                    sh "docker rm -f ${containerName} 2>/dev/null || true"
-                    sh "docker run -d --expose ${port} -p ${port}:3000 ${name}"
+                    bat "docker rm -f ${containerName} 2>/dev/null || true"
+                    bat "docker run -d --expose ${port} -p ${port}:3000 ${name}"
                 }
             }
         }
