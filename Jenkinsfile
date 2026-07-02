@@ -42,7 +42,7 @@ pipeline {
                     def port = isMain ? '3000' : '3001'
                     def containerName = isMain ? 'node-app-main' : 'node-app-dev'
 
-                    bat "docker rm -f ${containerName} 2>/dev/null || true"
+                    bat "docker rm -f ${containerName}"
                     bat "docker run -d --name ${containerName} --expose ${port} -p ${port}:3000 ${name}"
                 }
             }
