@@ -1,4 +1,4 @@
-@Library(['JenkinsTesLib', 'JenkinsTesLib@master']) _
+@Library(['JenkinsTesLib', 'JenkinsTesLib@main']) _
 
 pipeline {
     agent any
