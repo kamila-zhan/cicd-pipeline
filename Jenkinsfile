@@ -1,6 +1,8 @@
 @Library('JenkinsTestLib@main') _
 
 pipeline {
+    agent any
+    
     tools {
         nodejs 'node'
     }
