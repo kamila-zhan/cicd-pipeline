@@ -4,6 +4,7 @@ pipeline {
     agent {
         docker {
             image 'node:18'
+            args '-w /workspace -v %WORKSPACE%:/workspace'
         }
     }
     
