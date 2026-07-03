@@ -1,13 +1,6 @@
 @Library('JenkinsTestLib@main') _
 
 pipeline {
-    agent {
-        docker {
-            image 'node:18'
-            args '-w /workspace -v %WORKSPACE%:/workspace'
-        }
-    }
-    
     tools {
         nodejs 'node'
     }
