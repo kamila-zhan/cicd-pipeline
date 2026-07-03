@@ -1,4 +1,4 @@
-@Library(['JenkinsTestLib', 'JenkinsTestLib@main']) _
+@Library('JenkinsTestLib@main') _
 
 pipeline {
     agent any
