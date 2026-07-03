@@ -1,3 +1,5 @@
+@Library('JenkinsTestLib@main') _
+
 pipeline {
     agent any
     
@@ -64,14 +66,22 @@ pipeline {
         //     }
         // }
 
-        stage('deploy') {
+        // stage('deploy') {
+        //     steps {
+        //         script {
+        //             def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
+        //             def targetJob = isMain ? 'deploy_to_main' : 'deploy_to_dev'
+        //             build job: targetJob, wait: false
+        //         }
+        //     }
+        // }
+
+        stage('Deploy') {
             steps {
                 script {
-                    def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
-                    def targetJob = isMain ? 'deploy_to_main' : 'deploy_to_dev'
-                    build job: targetJob, wait: false
+                    Deploy() 
                 }
             }
-        }
+        } 
     }
 }
