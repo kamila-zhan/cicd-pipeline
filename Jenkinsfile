@@ -8,7 +8,7 @@ pipeline {
     }
 
     environment {
-        IS_MAIN = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
+        IS_MAIN = "${(env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')}"
         LOCAL_IMAGE = "${IS_MAIN ? 'nodemain:v1.0' : 'nodedev:v1.0'}"
         REMOTE_IMAGE = "${IS_MAIN ? 'kzhanuzak/node:main-v1.0' : 'kzhanuzak/node:dev-v1.0'}"
     }
