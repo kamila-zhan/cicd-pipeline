@@ -1,7 +1,11 @@
 @Library('JenkinsTestLib@main') _
 
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18'
+        }
+    }
     
     tools {
         nodejs 'node'
@@ -32,6 +36,12 @@ pipeline {
             }
         }
 
+        stage('Lint Dockerfile') { 
+            steps { 
+                bat 'hadolint Dockerfile' 
+            } 
+        }
+
         stage('build docker image') {
             steps {
                 script {
@@ -43,7 +53,7 @@ pipeline {
         stage('Scan Docker Image for Vulnerabilities') {
             steps {
                 script {
-                    def vulnerabilities = bat(script: "trivy image --exit-code 0 --severity HIGH,MEDIUM,LOW --no-progress ${env.LOCAL_IMAGE}", returnStdout: true).trim()
+                    def vulnerabilities = bat(script: "trivy image --exit-code 0 --severity HIGH,MEDIUM,LOW --no-progress --skip-registry-files ${env.LOCAL_IMAGE}", returnStdout: true).trim()
                     echo "Vulnerability Report:\n${vulnerabilities}"
                 }
             }
