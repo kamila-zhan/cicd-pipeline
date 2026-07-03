@@ -6,6 +6,12 @@ pipeline {
     tools {
         nodejs 'node'
     }
+
+    environment {
+        IS_MAIN = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
+        LOCAL_IMAGE = "${IS_MAIN ? 'nodemain:v1.0' : 'nodedev:v1.0'}"
+        REMOTE_IMAGE = "${IS_MAIN ? 'kzhanuzak/node:main-v1.0' : 'kzhanuzak/node:dev-v1.0'}"
+    }
     
     stages {
         stage('checkout') {
@@ -29,9 +35,16 @@ pipeline {
         stage('build docker image') {
             steps {
                 script {
-                    def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
-                    def imageName = isMain ? 'nodemain:v1.0' : 'nodedev:v1.0'
-                    bat "docker build -t ${imageName} ."
+                    bat "docker build -t ${env.LOCAL_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Scan Docker Image for Vulnerabilities') {
+            steps {
+                script {
+                    def vulnerabilities = bat(script: "trivy image --exit-code 0 --severity HIGH,MEDIUM,LOW --no-progress ${env.LOCAL_IMAGE}", returnStdout: true).trim()
+                    echo "Vulnerability Report:\n${vulnerabilities}"
                 }
             }
         }
@@ -39,14 +52,10 @@ pipeline {
         stage('push') {
             steps {
                 script {
-                    def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
-                    def localImage = isMain ? 'nodemain:v1.0' : 'nodedev:v1.0'
-                    def remoteImage = isMain ? 'kzhanuzak/node:main-v1.0' : 'kzhanuzak/node:dev-v1.0'
-                    
                     withCredentials([usernamePassword(credentialsId: 'jen-docker', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                         bat "docker login -u %USER% -p %PASS%"
-                        bat "docker tag ${localImage} ${remoteImage}"
-                        bat "docker push ${remoteImage}"
+                        bat "docker tag ${env.LOCAL_IMAGE} ${env.REMOTE_IMAGE}"
+                        bat "docker push ${env.REMOTE_IMAGE}"
                     }
                 }
             }
