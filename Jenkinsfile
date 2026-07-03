@@ -1,3 +1,7 @@
+@Library(['JenkinsTesLib', 'JenkinsTesLib@master']) _
+
+DeployToMaster(anyparam: "anyvalue")
+
 pipeline {
     agent any
     
@@ -64,13 +68,21 @@ pipeline {
         //     }
         // }
 
+        // stage('deploy') {
+        //     steps {
+        //         script {
+        //             def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
+        //             def targetJob = isMain ? 'deploy_to_main' : 'deploy_to_dev'
+        //             build job: targetJob, wait: false
+        //         }
+        //     }
+        // }
+
         stage('deploy') {
             steps {
-                script {
-                    def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
-                    def targetJob = isMain ? 'deploy_to_main' : 'deploy_to_dev'
-                    build job: targetJob, wait: false
-                }
+                def isMain = (env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main')
+                def targetJob = isMain ? 'deploy_to_main' : 'deploy_to_dev'
+                DeployToMaster(anyparam: targetJob)
             }
         }
     }
